@@ -1,5 +1,5 @@
-/*  GC to N64 : Gamecube controller to N64 adapter firmware
-    Copyright (C) 2011  Raphael Assenat <raph@raphnet.net>
+/*  GC to NES : Gamecube controller to NES adapter
+    Copyright (C) 2012  Raphael Assenat <raph@raphnet.net>
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

@@ -1,5 +1,5 @@
-/*  GC to N64 : Gamecube controller to N64 adapter firmware
-    Copyright (C) 2011  Raphael Assenat <raph@raphnet.net>
+/*  GC to NES : Gamecube controller to NES adapter
+    Copyright (C) 2012  Raphael Assenat <raph@raphnet.net>
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -55,6 +55,8 @@ ISR(INT0_vect)
 {
 	unsigned char bit, dat = nesbyte;
 
+	DEBUG_HIGH();
+
 	/**           __
 	 * Latch ____|  |________________________________________
 	 *       _________   _   _   _   _   _   _   _   ________
@@ -76,17 +78,18 @@ ISR(INT0_vect)
 	 */
 	while (NES_LATCH_PIN & (1<<NES_LATCH_BIT));
 
+	TCNT0 = 0;
+	TIFR = 1<<TOV0;
 	bit = 0x40;
-	while(1) 
+	for (bit=0x40; bit; bit>>=1) 
 	{
+
 		// wait clock falling edge
 		while (NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)) 
 		{  	
-			// If latch rises again, exit the interrupt. We
-			// will re-enter this handler again very shortly because
-			// this rising edge will set the INTF0 flag.
-			if (NES_LATCH_PIN & (1<<NES_LATCH_BIT)) {
-				return;
+			if (TIFR & (1<<TOV0)) {
+				// clock wait timeout
+				goto int0_done;
 			}
 		}
 
@@ -96,15 +99,14 @@ ISR(INT0_vect)
 			NES_DATA_PORT &= ~(1<<NES_DATA_BIT);
 		}
 
-		bit >>= 1;
-		if (!bit)
-			break;
-
+		TCNT0 = 0;
+		TIFR = 1<<TOV0;
+		
 		if (NES_LATCH_PIN & (1<<NES_LATCH_BIT)) {
 			// If latch rises again, exit the interrupt. We
 			// will re-enter this handler again very shortly because
 			// this rising edge will set the INTF0 flag.
-			return;
+			goto int0_done;
 		}
 	}	
 	
@@ -112,16 +114,20 @@ ISR(INT0_vect)
 	 * 'idle' level of the data line */
 	while ((NES_CLOCK_PIN & (1<<NES_CLOCK_BIT))) 
 	{  	
-		if (NES_LATCH_PIN & (1<<NES_LATCH_BIT)) {
-			return;
+		if (TIFR & (1<<TOV0)) {
+			// clock wait timeout
+			goto int0_done;
 		}
-
+	
 	}
 	
 	NES_DATA_PORT &= ~(1<<NES_DATA_BIT);
 
+int0_done:
+
 	/* Let the main loop know about this interrupt occuring. */
 	g_nes_polled = 1;
+	DEBUG_LOW();
 }
 
 
@@ -178,6 +184,60 @@ void axisToNes_mario(unsigned char val, int nes_btn_low, int nes_btn_high, int n
 	}
 }
 
+#define MAPPING_DEFAULT	0
+#define MAPPING_AUTORUN	1
+
+static int cur_mapping = MAPPING_DEFAULT;
+
+void doMapping()
+{
+	static unsigned char turbo = 0xff;
+
+	switch(cur_mapping) {
+		case MAPPING_DEFAULT:
+			toNes(GC_GET_A(gc_report), 			NES_BIT_A);	
+			toNes(GC_GET_B(gc_report), 			NES_BIT_B);	
+			toNes(GC_GET_Z(gc_report), 			NES_BIT_SELECT);
+			toNes(GC_GET_START(gc_report), 		NES_BIT_START);
+			toNes(GC_GET_DPAD_UP(gc_report), 	NES_BIT_UP);
+			toNes(GC_GET_DPAD_DOWN(gc_report), 	NES_BIT_DOWN);
+			toNes(GC_GET_DPAD_LEFT(gc_report), 	NES_BIT_LEFT);
+			toNes(GC_GET_DPAD_RIGHT(gc_report), NES_BIT_RIGHT);
+
+			axisToNes(gc_report[0], NES_BIT_LEFT, NES_BIT_RIGHT, 32);
+			axisToNes(gc_report[1], NES_BIT_UP, NES_BIT_DOWN, 32);
+			break;
+
+		case MAPPING_AUTORUN:
+			toNes(GC_GET_A(gc_report), 			NES_BIT_A);	
+			toNes(GC_GET_B(gc_report), 			NES_BIT_B);	
+			toNes(GC_GET_Z(gc_report), 			NES_BIT_SELECT);
+			toNes(GC_GET_START(gc_report), 		NES_BIT_START);
+			toNes(GC_GET_DPAD_UP(gc_report), 	NES_BIT_UP);
+			toNes(GC_GET_DPAD_DOWN(gc_report), 	NES_BIT_DOWN);
+			toNes(GC_GET_DPAD_LEFT(gc_report), 	NES_BIT_LEFT);
+			toNes(GC_GET_DPAD_RIGHT(gc_report), NES_BIT_RIGHT);
+
+			axisToNes_mario(gc_report[0], NES_BIT_LEFT, NES_BIT_RIGHT, NES_BIT_B, 32, 64);
+
+			// This is not useful in mario, but as it does not appear to cause
+			// any problems, I do it anyway since it might be good for other games.
+			// (e.g. 2D view from above, with B button to run)
+			axisToNes_mario(gc_report[1], NES_BIT_UP, NES_BIT_DOWN, NES_BIT_B, 32, 64);
+
+			break;
+	}
+
+	if (GC_GET_L(gc_report)) {
+		if (!(nesbyte & (0x80>>NES_BIT_B)))
+			nesbyte ^= turbo & (0x80>>NES_BIT_B);
+		if (!(nesbyte & (0x80>>NES_BIT_A)))
+			nesbyte ^= turbo & (0x80>>NES_BIT_A);
+	}
+
+	turbo ^= 0xff;
+}
+
 int main(void)
 {
 	
@@ -192,6 +252,7 @@ int main(void)
 	DDRB = 0;
 	PORTB = 0xff;
 	DDRB = 1<<5;
+	DEBUG_LOW();
 
 	/* PORTC
 	 * 0: Data (output) 
@@ -205,27 +266,34 @@ int main(void)
 	GICR |= (1<<INT0);
 	GICR &= ~(1<<INT1);
 
-	sei();
-	
+
+	TCCR0 = (1<<CS01); // /8, overflows at 170us intervals
 
 	gcpad->init();
 
-	DEBUG_HIGH();
 	_delay_ms(500);
 
 	/* Read from Gamecube controller */
 	gcpad->update();
 	gcpad->buildReport(gc_report);
 
-	DEBUG_LOW();
+
+	if (GC_GET_A(gc_report)) {
+		cur_mapping = MAPPING_AUTORUN;
+	}
+
 
 	sync_init();
+
+	sei();
 
 	while(1)
 	{
 		if (g_nes_polled) {
+			//DEBUG_HIGH();
 			g_nes_polled = 0;
 			sync_master_polled_us();
+			DEBUG_LOW();
 		}
 
 		if (sync_may_poll()) {	
@@ -236,26 +304,12 @@ int main(void)
 
 
 			if (gcpad->changed()) {
-	//			DEBUG_HIGH();
 				// Read the gamepad	
 				gcpad->buildReport(gc_report);				
+	
+				// prepare the controller data byte
+				doMapping();
 
-				toNes(GC_GET_A(gc_report), 			NES_BIT_A);	
-				toNes(GC_GET_B(gc_report), 			NES_BIT_B);	
-				toNes(GC_GET_Z(gc_report), 			NES_BIT_SELECT);
-				toNes(GC_GET_START(gc_report), 		NES_BIT_START);
-				toNes(GC_GET_DPAD_UP(gc_report), 	NES_BIT_UP);
-				toNes(GC_GET_DPAD_DOWN(gc_report), 	NES_BIT_DOWN);
-				toNes(GC_GET_DPAD_LEFT(gc_report), 	NES_BIT_LEFT);
-				toNes(GC_GET_DPAD_RIGHT(gc_report), NES_BIT_RIGHT);
-
-			//	axisToNes(gc_report[0], NES_BIT_LEFT, NES_BIT_RIGHT, 32);
-				
-				axisToNes_mario(gc_report[0], NES_BIT_LEFT, NES_BIT_RIGHT, NES_BIT_B, 32, 64);
-				axisToNes_mario(gc_report[1], NES_BIT_UP, NES_BIT_DOWN, NES_BIT_B, 32, 64);
-//				axisToNes(gc_report[1], NES_BIT_UP, NES_BIT_DOWN, 32);
-				
-	//			DEBUG_LOW();
 			}
 		}
 	}
