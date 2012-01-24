@@ -32,6 +32,8 @@ Gamepad *gcpad;
 unsigned char gc_report[GCN64_REPORT_SIZE];
 
 static volatile unsigned char g_nes_polled = 0;
+static volatile unsigned char g_turbo_on = 0;
+static volatile unsigned char int_counter = 0;
 
 static volatile unsigned char nesbyte = 0xff;
 
@@ -56,6 +58,13 @@ ISR(INT0_vect)
 	unsigned char bit, dat = nesbyte;
 
 	DEBUG_HIGH();
+
+	if (g_turbo_on) {
+		if (int_counter&0x4) {
+			dat |= 0xc0;
+		}
+		int_counter++;
+	}
 
 	/**           __
 	 * Latch ____|  |________________________________________
@@ -184,15 +193,19 @@ void axisToNes_mario(unsigned char val, int nes_btn_low, int nes_btn_high, int n
 	}
 }
 
-#define MAPPING_DEFAULT	0
-#define MAPPING_AUTORUN	1
+#define MAPPING_DEFAULT			0
+#define MAPPING_LOWER_THRESHOLD	1
+#define MAPPING_AUTORUN			2
+
+
+#define AXIS_ON_OFF_THRESHOLD	56
+
+#define AXIS_ON_OFF_THRESHOLD2	32
 
 static int cur_mapping = MAPPING_DEFAULT;
 
 void doMapping()
 {
-	static unsigned char turbo = 0xff;
-
 	switch(cur_mapping) {
 		case MAPPING_DEFAULT:
 			toNes(GC_GET_A(gc_report), 			NES_BIT_A);	
@@ -204,8 +217,22 @@ void doMapping()
 			toNes(GC_GET_DPAD_LEFT(gc_report), 	NES_BIT_LEFT);
 			toNes(GC_GET_DPAD_RIGHT(gc_report), NES_BIT_RIGHT);
 
-			axisToNes(gc_report[0], NES_BIT_LEFT, NES_BIT_RIGHT, 32);
-			axisToNes(gc_report[1], NES_BIT_UP, NES_BIT_DOWN, 32);
+			axisToNes(gc_report[0], NES_BIT_LEFT, NES_BIT_RIGHT, AXIS_ON_OFF_THRESHOLD);
+			axisToNes(gc_report[1], NES_BIT_UP, NES_BIT_DOWN, AXIS_ON_OFF_THRESHOLD);
+			break;
+
+		case MAPPING_LOWER_THRESHOLD:
+			toNes(GC_GET_A(gc_report), 			NES_BIT_A);	
+			toNes(GC_GET_B(gc_report), 			NES_BIT_B);	
+			toNes(GC_GET_Z(gc_report), 			NES_BIT_SELECT);
+			toNes(GC_GET_START(gc_report), 		NES_BIT_START);
+			toNes(GC_GET_DPAD_UP(gc_report), 	NES_BIT_UP);
+			toNes(GC_GET_DPAD_DOWN(gc_report), 	NES_BIT_DOWN);
+			toNes(GC_GET_DPAD_LEFT(gc_report), 	NES_BIT_LEFT);
+			toNes(GC_GET_DPAD_RIGHT(gc_report), NES_BIT_RIGHT);
+
+			axisToNes(gc_report[0], NES_BIT_LEFT, NES_BIT_RIGHT, AXIS_ON_OFF_THRESHOLD2);
+			axisToNes(gc_report[1], NES_BIT_UP, NES_BIT_DOWN, AXIS_ON_OFF_THRESHOLD2);
 			break;
 
 		case MAPPING_AUTORUN:
@@ -229,13 +256,10 @@ void doMapping()
 	}
 
 	if (GC_GET_L(gc_report)) {
-		if (!(nesbyte & (0x80>>NES_BIT_B)))
-			nesbyte ^= turbo & (0x80>>NES_BIT_B);
-		if (!(nesbyte & (0x80>>NES_BIT_A)))
-			nesbyte ^= turbo & (0x80>>NES_BIT_A);
+		g_turbo_on = 1;
+	} else {
+		g_turbo_on = 0;
 	}
-
-	turbo ^= 0xff;
 }
 
 int main(void)
@@ -280,6 +304,9 @@ int main(void)
 
 	if (GC_GET_A(gc_report)) {
 		cur_mapping = MAPPING_AUTORUN;
+	}
+	if (GC_GET_B(gc_report)) {
+		cur_mapping = MAPPING_LOWER_THRESHOLD;
 	}
 
 
