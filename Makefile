@@ -5,8 +5,8 @@ LD=$(CC)
 CPU=atmega8
 UISP=uisp -dprog=stk500 -dpart=atmega8 -dserial=/dev/avr
 CFLAGS=-Wall -mmcu=$(CPU) -DF_CPU=16000000L -Os
-LDFLAGS=-mmcu=$(CPU) -Wl,-Map=gc_to_n64.map
-HEXFILE=gc_to_n64.hex
+LDFLAGS=-mmcu=$(CPU) -Wl,-Map=gc_to_nes.map
+HEXFILE=gc_to_nes.hex
 AVRDUDE=avrdude
 AVRDUDE_CPU=m8
 #AVRDUDE_CPU=m88
@@ -16,14 +16,14 @@ OBJS=main.o gamecube.o support.o sync.o
 all: $(HEXFILE)
 
 clean:
-	rm -f gc_to_n64.elf gc_to_n64.hex gc_to_n64.map $(OBJS)
+	rm -f gc_to_nes.elf gc_to_nes.hex gc_to_nes.map $(OBJS)
 
-gc_to_n64.elf: $(OBJS)
-	$(LD) $(OBJS) $(LDFLAGS) -o gc_to_n64.elf
+gc_to_nes.elf: $(OBJS)
+	$(LD) $(OBJS) $(LDFLAGS) -o gc_to_nes.elf
 
-gc_to_n64.hex: gc_to_n64.elf
-	avr-objcopy -j .data -j .text -O ihex gc_to_n64.elf gc_to_n64.hex
-	avr-size gc_to_n64.elf
+gc_to_nes.hex: gc_to_nes.elf
+	avr-objcopy -j .data -j .text -O ihex gc_to_nes.elf gc_to_nes.hex
+	avr-size gc_to_nes.elf
 
 fuse:
 	$(UISP) --wr_fuse_h=0xd9 --wr_fuse_l=0xdf --wr_fuse_e=0xf
