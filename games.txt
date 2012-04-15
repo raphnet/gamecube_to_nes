@@ -1,9 +1,12 @@
 These are the games that I had on hand to test 
 this adapter.
 
-SUPER MARIO	BROS.		OK
-SUPER MARIO BROS 2		OK
-METROID					OK
+Game title              v1.0      v1.1
+---------------------------------------------
+SUPER MARIO	BROS.		OK        
+SUPER MARIO BROS 2		OK        
+SUPER MARIO BROS 3      NOT OK    OK
+METROID					OK        OK
 BUBBLE BOBBLE			OK
 ZELDA II				OK
 KID ICARUS				OK

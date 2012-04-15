@@ -7,8 +7,12 @@ See gpl.txt for details.
 
 --------------= Relase history =-------------
 
-January 26, 2012 : Version 1.0.
+April 15, 2012 : Version 1.1
+	- Algorithm improvement fixes Mario Bros 3. 
+	- Retested with all other games. (see games.txt)
 
+January 26, 2012 : Version 1.0.
+    - Initial release
 
 
 ----------------= Operation =----------------

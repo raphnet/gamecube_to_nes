@@ -53,19 +53,26 @@ static volatile unsigned char nesbyte = 0xff;
 #define NES_BIT_LEFT	6
 #define NES_BIT_RIGHT	7
 
+
 ISR(INT0_vect)
 {
-	unsigned char bit, dat = nesbyte;
+	unsigned char bit, dat;
 
 	DEBUG_HIGH();
+
+	if (g_turbo_on) {
+		int_counter++;
+	}
+
+//relatch:
+	dat = nesbyte;
 
 	if (g_turbo_on) {
 		if (int_counter&0x4) {
 			dat |= 0xc0;
 		}
-		int_counter++;
 	}
-
+	
 	/**           __
 	 * Latch ____|  |________________________________________
 	 *       _________   _   _   _   _   _   _   _   ________
@@ -81,56 +88,308 @@ ISR(INT0_vect)
 		NES_DATA_PORT &= ~(1<<NES_DATA_BIT);
 	}
 
-	/* Wait until the latch pulse is over before continuing.
-	 * This makes it possible to detect repeated latches
-	 * by monitoring the pin later.
-	 */
-	while (NES_LATCH_PIN & (1<<NES_LATCH_BIT));
 
-	TCNT0 = 0;
-	TIFR = 1<<TOV0;
-	bit = 0x40;
-	for (bit=0x40; bit; bit>>=1) 
+
+	dat <<= 1;
+	for (bit=0x80; bit; bit>>=1) 
 	{
 
-		// wait clock falling edge
-		while (NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)) 
-		{  	
-			if (TIFR & (1<<TOV0)) {
-				// clock wait timeout
-				goto int0_done;
-			}
-		}
+		/* The big unrolled polling loop here is necessary. Otherwise,
+		 * there is too much jitter/delay in detecting the clock's falling
+		 * edge. 
+		 *
+		 * The solution is simple : Don't check for timeouts inside the loop. 
+		 * Unrolling like this means the end *is* the timeout :)
+		 *
+		 * This would also free us time to check for repeated and buried 
+		 * latches. I.e one that would occur suddenly right in the middle
+		 * of an incomplete clocking. At the moment, this does not appear
+		 * to be required by any games...
+		 * 
+		 * The timeout is necessary for games which latch the controller but
+		 * don't read all the bits. For instance, metroid does a first latch,
+		 * reads the 8 bits, then latch again, and does nothing. We need
+		 * a way to exit this interrupt handler to let the main run and poll
+		 * the Gamecube controller! The timeout approach works well. If the 
+		 * game is not clocking us after a certain amount of time, we assume
+		 * this is it. Let's just hope there are no games where the programmer
+		 * decided to poll the controller in two steps with a long delay in
+		 * the middle of the clocking period...
+		 *
+		 */
 
+//		if (GIFR & (1<<INTF0))
+//			goto relatch;
+
+
+		// wait clock falling edge
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
+			goto dobit1;
+
+		goto int0_done;
+
+dobit1:
 		if (dat & bit) {
 			NES_DATA_PORT |= (1<<NES_DATA_BIT);
 		} else {
 			NES_DATA_PORT &= ~(1<<NES_DATA_BIT);
 		}
-
-		TCNT0 = 0;
-		TIFR = 1<<TOV0;
-		
-		if (NES_LATCH_PIN & (1<<NES_LATCH_BIT)) {
-			// If latch rises again, exit the interrupt. We
-			// will re-enter this handler again very shortly because
-			// this rising edge will set the INTF0 flag.
-			goto int0_done;
-		}
 	}	
 	
-	/* One last clock cycle to go before we set the
-	 * 'idle' level of the data line */
-	while ((NES_CLOCK_PIN & (1<<NES_CLOCK_BIT))) 
-	{  	
-		if (TIFR & (1<<TOV0)) {
-			// clock wait timeout
-			goto int0_done;
-		}
-	
-	}
-	
-	NES_DATA_PORT &= ~(1<<NES_DATA_BIT);
 
 int0_done:
 
@@ -289,9 +548,6 @@ int main(void)
 	MCUCR |= (1<<ISC01) | (1<<ISC00);
 	GICR |= (1<<INT0);
 	GICR &= ~(1<<INT1);
-
-
-	TCCR0 = (1<<CS01); // /8, overflows at 170us intervals
 
 	gcpad->init();
 
