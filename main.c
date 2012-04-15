@@ -15,7 +15,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-	v1.1 : 2012-04-15. Tighter clock polling loop. Fixes problems with Mario 3. 
+	v1.1 : 2012-04-15. Tighter clock polling loop. Fixes problems with Mario 3.
 	v1.0 : 2012-01-26. Initial release 
 */
 #include <stdio.h>

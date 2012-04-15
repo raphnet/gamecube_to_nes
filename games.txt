@@ -3,23 +3,23 @@ this adapter.
 
 Game title              v1.0              v1.1
 ------------------------------------------------
-SUPER MARIO	BROS.		OK        
-SUPER MARIO BROS 2		OK        
+SUPER MARIO	BROS.		OK                OK
+SUPER MARIO BROS 2		OK                OK
 SUPER MARIO BROS 3      UNRELIABLE (1)    OK
 METROID					OK                OK
-BUBBLE BOBBLE			OK
-ZELDA II				OK
-KID ICARUS				OK
-R.C. PRO-AM				OK
-LIFE FORCE				OK
-IKARI WARRIORS			OK
-KARNOV					OK
-BLADES OF STEEL			OK
-TURTLES II				OK
-LEGENDARY WINGS			OK
-METAL STORM				OK
-BASEBALL				OK
-
+BUBBLE BOBBLE			OK                OK
+ZELDA II				OK                OK
+KID ICARUS				OK                OK
+R.C. PRO-AM				OK                OK
+LIFE FORCE				OK                OK
+IKARI WARRIORS			OK                OK
+KARNOV					OK                OK
+BLADES OF STEEL			OK                OK
+TURTLES II				OK                OK
+LEGENDARY WINGS			OK                OK
+METAL STORM				OK                OK
+BASEBALL				OK                OK
+PAPERBOY				?                 OK(2)          
 
 
 Issue history
@@ -28,14 +28,29 @@ Issue history
 
 (1) SUPER MARIO BROS 3 
 
-Firmware: v1.0
-
-Description: Mario sometimes jumps unexpectedly.
-
-To reproduce: Stay put inside a level while
+Firmware......: v1.0
+Description...: Mario sometimes jumps unexpectedly.
+To reproduce..: Stay put inside a level while
 holding the B button (run) and wait. The character
 jumps once in a while even though A (jump) has not been
 pressed.
+Status........: Solved in v1.1
+Technical.....: It seems this was due to jitter/delays in detecting
+the clock edge. Reworked the code for better performance in that area.
 
-Status: Solved in v1.1
 
+(2) PAPERBOY
+
+Firmware......: v1.0
+Description...: Cannot exit pause screen.
+To reproduce..: Pause during game.
+Status........: Workaround in v1.1, pause screen disabled.
+Technical.....: Paperboy polls the controller continuously in a loop during
+the pause screen. In those conditions, the firmware has no time
+to poll the gamecube controller, so the button press that would
+exit the pause screen is never captured. With the current hardware,
+nothing can be done but detecting the condition and stop responding
+while reading the gamecube controller from time to time. This looks
+like a disconnected controller to the game, and this game exists
+the pause screen when you disconnect a controller. Hence, we cannot
+stay in pause mode.
