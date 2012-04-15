@@ -1,12 +1,12 @@
 These are the games that I had on hand to test 
 this adapter.
 
-Game title              v1.0      v1.1
----------------------------------------------
+Game title              v1.0              v1.1
+------------------------------------------------
 SUPER MARIO	BROS.		OK        
 SUPER MARIO BROS 2		OK        
-SUPER MARIO BROS 3      NOT OK    OK
-METROID					OK        OK
+SUPER MARIO BROS 3      UNRELIABLE (1)    OK
+METROID					OK                OK
 BUBBLE BOBBLE			OK
 ZELDA II				OK
 KID ICARUS				OK
@@ -19,4 +19,23 @@ TURTLES II				OK
 LEGENDARY WINGS			OK
 METAL STORM				OK
 BASEBALL				OK
+
+
+
+Issue history
+---------------
+
+
+(1) SUPER MARIO BROS 3 
+
+Firmware: v1.0
+
+Description: Mario sometimes jumps unexpectedly.
+
+To reproduce: Stay put inside a level while
+holding the B button (run) and wait. The character
+jumps once in a while even though A (jump) has not been
+pressed.
+
+Status: Solved in v1.1
 
