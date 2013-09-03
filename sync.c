@@ -15,6 +15,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include <avr/io.h>
+#include "atmega168compat.h"
 
 /* Forces the old behaviour which means a stable time distance 
  * between N64 poll and our Gamecube * poll. Sometimes useful
@@ -78,6 +79,9 @@
 static unsigned int poll_threshold;
 static unsigned char state;
 
+#ifdef AT168_COMPATIBLE
+#define TIFR TIFR1
+#endif
 
 void sync_init(void)
 {

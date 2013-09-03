@@ -1,5 +1,5 @@
 /*  GC to NES : Gamecube controller to NES adapter
-    Copyright (C) 2012  Raphael Assenat <raph@raphnet.net>
+    Copyright (C) 2012-2013  Raphael Assenat <raph@raphnet.net>
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
+	v1.2 : 2013-09-02. Added Atmega168 support
 	v1.1 : 2012-04-15. Tighter clock polling loop. Fixes problems with Mario 3.
 	v1.0 : 2012-01-26. Initial release 
 */
@@ -27,9 +27,16 @@
 #include "gamecube.h"
 #include "boarddef.h"
 #include "sync.h"
+#include "atmega168compat.h"
 
 #define DEBUG_LOW()		PORTB &= ~(1<<5);
 #define DEBUG_HIGH()	PORTB |= (1<<5);
+
+#ifdef AT168_COMPATIBLE
+	#define COMPAT_GIFR	EIFR
+#else
+	#define COMPAT_GIFR	GIFR
+#endif
 
 
 Gamepad *gcpad;
@@ -81,7 +88,11 @@ ISR(INT0_vect)
 	reuse++;
 	if (reuse==0xff) {
 		// reuse is cleared each time we perform a read from the gamecube controller.
+#ifdef AT168_COMPATIBLE
+		EIMSK &= ~(1<<INT0);
+#else
 		GICR &= ~(1<<INT0);
+#endif
 		
 		// let the data line be high, so it looks as no buttons are pressed.
 		// This also looks like no controller to the game.
@@ -92,7 +103,7 @@ ISR(INT0_vect)
 #endif
 
 relatch:
-	GIFR |= (1<<INTF0);
+	COMPAT_GIFR |= (1<<INTF0);
 	dat = nesbyte;
 
 	if (g_turbo_on) {
@@ -167,1379 +178,1379 @@ relatch:
 		// wait clock falling edge
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 		if (!(NES_CLOCK_PIN & (1<<NES_CLOCK_BIT)))
 			goto dobit1;
-		if (GIFR & (1<<INTF0))
+		if (COMPAT_GIFR & (1<<INTF0))
 			goto relatch;
 
 
@@ -1708,9 +1719,15 @@ int main(void)
 	PORTC=0xff;
 
 	// configure external interrupt 0 to trigger on rising edge
+#ifdef AT168_COMPATIBLE
+	EIMSK |= (1<<INT0);
+	EIMSK &= ~(1<<INT1);
+	EICRA = (1<<ISC01) | (1<<ISC00);
+#else
 	MCUCR |= (1<<ISC01) | (1<<ISC00);
 	GICR |= (1<<INT0);
 	GICR &= ~(1<<INT1);
+#endif
 
 	gcpad->init();
 
@@ -1761,7 +1778,11 @@ int main(void)
 			// is that it is a fresh read.
 			if (reuse == 0xff) {
 				// reenable int
+#ifdef AT168_COMPATIBLE
+				EIMSK |= (1<<INT0);
+#else
 				GICR |= (1<<INT0);
+#endif
 			}
 			reuse = 0;
 		}
