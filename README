@@ -7,6 +7,9 @@ See gpl.txt for details.
 
 --------------= Relase history =-------------
 
+September 2, 2013 : Version 1.1.1
+    - Atmega168 support
+
 April 15, 2012 : Version 1.1
 	- Algorithm improvement fixes Mario Bros 3. 
 	- Retested with all other games. (see games.txt)
