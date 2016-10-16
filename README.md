@@ -9,6 +9,13 @@ This is a project to control our good old NES with a controller that came out 15
 * Turbo feature. While L is pressed, A and B become turbos.
 * Special mode for Mario Bros. (autorun).
 
+## Project homepgae
+
+Schematic and additional information are available on the project homepage:
+
+* English: [Gamecube controller to NES adapter](http://www.raphnet.net/electronique/gc_to_nes/index_en.php)
+* French: [Adaptateur manette Gamecube à NES](http://www.raphnet.net/electronique/gc_to_nes/index.php)
+
 ## Release History
 
 * September 2, 2013 : Version 1.1.1
