@@ -53,10 +53,10 @@ the corresponding D-Pad direction).
 
 ### Wiring
 
-INT0 / PD2  :  NES Latch
-PC0         :  NES Data
-PC1         :  NES Clock
-PC5         : Gamecube data (external pull up to 3.3 volt required)
+* INT0 / PD2  :  NES Latch
+* PC0         :  NES Data
+* PC1         :  NES Clock
+* PC5         : Gamecube data (external pull up to 3.3 volt required)
 
 The circuit is powered from the NES 5 volt. An on-board step-down regulator
 is required to supply 3.3 volt to the gamecube controller.
