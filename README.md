@@ -18,6 +18,9 @@ Schematic and additional information are available on the project homepage:
 
 ## Release History
 
+* October 23, 2016 : Version 1.2
+  * Updated gamecube IO code (transplanted from gcn64usb v2.9.2). Fixes some compatibility issues.
+
 * September 2, 2013 : Version 1.1.1
   * Atmega168 support
 
