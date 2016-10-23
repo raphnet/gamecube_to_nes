@@ -11,7 +11,7 @@ AVRDUDE=avrdude
 AVRDUDE_CPU=m8
 #AVRDUDE_CPU=m88
 
-OBJS=main.o gamecube.o support.o sync.o
+OBJS=main.o gcn64_protocol.o gamecube.o support.o sync.o
 
 all: $(HEXFILE)
 

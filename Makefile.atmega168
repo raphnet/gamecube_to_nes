@@ -8,7 +8,7 @@ LDFLAGS=-mmcu=$(CPU) -Wl,-Map=gc_to_nes.map
 HEXFILE=gc_to_nes.hex
 AVRDUDE=avrdude -p m168 -P usb -c avrispmkII
 
-OBJS=main.o gamecube.o support.o sync.o
+OBJS=main.o gcn64_protocol.o gamecube.o support.o sync.o
 
 all: $(HEXFILE)
 

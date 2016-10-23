@@ -24,6 +24,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
+#include "gcn64_protocol.h"
 #include "gamecube.h"
 #include "boarddef.h"
 #include "sync.h"
@@ -70,7 +71,7 @@ ISR(INT0_vect)
 {
 	unsigned char bit, dat;
 
-	DEBUG_HIGH();
+	//DEBUG_HIGH();
 
 	if (g_turbo_on) {
 		int_counter++;
@@ -1569,7 +1570,7 @@ int0_done:
 
 	/* Let the main loop know about this interrupt occuring. */
 	g_nes_polled = 1;
-	DEBUG_LOW();
+	//DEBUG_LOW();
 }
 
 
@@ -1729,13 +1730,14 @@ int main(void)
 	GICR &= ~(1<<INT1);
 #endif
 
+	gcn64protocol_hwinit();
 	gcpad->init();
 
 	_delay_ms(500);
 
 	/* Read from Gamecube controller */
 	gcpad->update();
-	gcpad->buildReport(gc_report);
+	gcpad->buildReport(gc_report, 0);
 
 
 	if (GC_GET_A(gc_report)) {
@@ -1756,7 +1758,7 @@ int main(void)
 			//DEBUG_HIGH();
 			g_nes_polled = 0;
 			sync_master_polled_us();
-			DEBUG_LOW();
+//			DEBUG_LOW();
 		}
 
 		if (sync_may_poll() || (reuse == 0xff)) {	
@@ -1766,10 +1768,9 @@ int main(void)
 //			DEBUG_LOW();
 
 
-			if (gcpad->changed()) {
-				// Read the gamepad	
-				gcpad->buildReport(gc_report);				
-	
+			if (gcpad->changed(0)) {
+				// Read the gamepad
+				gcpad->buildReport(gc_report, 0);
 				// prepare the controller data byte
 				doMapping();
 			}
